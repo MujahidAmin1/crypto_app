@@ -3,8 +3,8 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:crypto_app/models/coins.dart';
 
-Future<GlobalData?> fetchGlobalData() async {
-  String url = "https://api.coingecko.com/api/v3/global";
+Future<List<Crypto>?> fetchGlobalData() async {
+  String url = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd";
   var headers = {
     "accept": "application/json",
     "x-cg-demo-api-key": "CG-3JApk2NBV9euWsFDhcMei4GG",
@@ -16,16 +16,10 @@ Future<GlobalData?> fetchGlobalData() async {
     log("API Response Body: ${response.body}");
 
     if (response.statusCode == 200) {
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
-       Map<String, dynamic> marketCapData = jsonData["data"]["total_market_cap"];
-      // Ensure `data` key exists
-      if (jsonData.containsKey('data') && jsonData['data'] != null) {
-        return GlobalData.fromJson(jsonData);
-      } 
-      else {
-        log("Error: 'data' key is missing or null in JSON response");
-        return null;
-      }
+      List<dynamic> jsonData = jsonDecode(response.body);
+      List<Crypto> cryptos = jsonData.map((crypto) => Crypto.fromJson(crypto)).toList();
+      return cryptos;
+        
     } else {
       log("API Error: ${response.statusCode} - ${response.body}");
       return null;

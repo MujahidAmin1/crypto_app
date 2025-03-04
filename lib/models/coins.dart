@@ -1,57 +1,84 @@
-class GlobalData {
-  final int activeCryptocurrencies;
-  final int upcomingIcos;
-  final int ongoingIcos;
-  final int endedIcos;
-  final int markets;
-  final Map<String, double> totalMarketCap;
-  final Map<String, double> totalVolume;
-  final Map<String, double> marketCapPercentage;
-  final double marketCapChangePercentage24hUsd;
-  final int updatedAt;
+import 'dart:convert';
 
-  GlobalData({
-    required this.activeCryptocurrencies,
-    required this.upcomingIcos,
-    required this.ongoingIcos,
-    required this.endedIcos,
-    required this.markets,
-    required this.totalMarketCap,
+class Crypto {
+  final String id;
+  final String symbol;
+  final String name;
+  final String image;
+  final double currentPrice;
+  final double marketCap;
+  final int marketCapRank;
+  final double fullyDilutedValuation;
+  final double totalVolume;
+  final double high24h;
+  final double low24h;
+  final double priceChange24h;
+  final double priceChangePercentage24h;
+  final double marketCapChange24h;
+  final double marketCapChangePercentage24h;
+  final double circulatingSupply;
+  final double totalSupply;
+  final double? maxSupply;
+  final double ath;
+  final double athChangePercentage;
+  final String athDate;
+  final double atl;
+  final double atlChangePercentage;
+  final String atlDate;
+
+  Crypto({
+    required this.id,
+    required this.symbol,
+    required this.name,
+    required this.image,
+    required this.currentPrice,
+    required this.marketCap,
+    required this.marketCapRank,
+    required this.fullyDilutedValuation,
     required this.totalVolume,
-    required this.marketCapPercentage,
-    required this.marketCapChangePercentage24hUsd,
-    required this.updatedAt,
+    required this.high24h,
+    required this.low24h,
+    required this.priceChange24h,
+    required this.priceChangePercentage24h,
+    required this.marketCapChange24h,
+    required this.marketCapChangePercentage24h,
+    required this.circulatingSupply,
+    required this.totalSupply,
+    this.maxSupply,
+    required this.ath,
+    required this.athChangePercentage,
+    required this.athDate,
+    required this.atl,
+    required this.atlChangePercentage,
+    required this.atlDate,
   });
 
-  factory GlobalData.fromJson(Map<String, dynamic> json) {
-    // Ensure 'data' exists
-    final data = json['data'] as Map<String, dynamic>?;
-
-    if (data == null) {
-      throw Exception("Invalid JSON: Missing 'data' key");
-    }
-
-    return GlobalData(
-      activeCryptocurrencies: data['active_cryptocurrencies'] ?? 0,
-      upcomingIcos: data['upcoming_icos'] ?? 0,
-      ongoingIcos: data['ongoing_icos'] ?? 0,
-      endedIcos: data['ended_icos'] ?? 0,
-      markets: data['markets'] ?? 0,
-      totalMarketCap: _convertToDoubleMap(data['total_market_cap']),
-      totalVolume: _convertToDoubleMap(data['total_volume']),
-      marketCapPercentage: _convertToDoubleMap(data['market_cap_percentage']),
-      marketCapChangePercentage24hUsd:
-          (data['market_cap_change_percentage_24h_usd'] as num?)?.toDouble() ?? 0.0,
-      updatedAt: data['updated_at'] ?? 0,
+  factory Crypto.fromJson(Map<String, dynamic> json) {
+    return Crypto(
+      id: json['id'],
+      symbol: json['symbol'],
+      name: json['name'],
+      image: json['image'],
+      currentPrice: (json['current_price'] as num).toDouble(),
+      marketCap: (json['market_cap'] as num).toDouble(),
+      marketCapRank: json['market_cap_rank'],
+      fullyDilutedValuation: (json['fully_diluted_valuation'] as num).toDouble(),
+      totalVolume: (json['total_volume'] as num).toDouble(),
+      high24h: (json['high_24h'] as num).toDouble(),
+      low24h: (json['low_24h'] as num).toDouble(),
+      priceChange24h: (json['price_change_24h'] as num).toDouble(),
+      priceChangePercentage24h: (json['price_change_percentage_24h'] as num).toDouble(),
+      marketCapChange24h: (json['market_cap_change_24h'] as num).toDouble(),
+      marketCapChangePercentage24h: (json['market_cap_change_percentage_24h'] as num).toDouble(),
+      circulatingSupply: (json['circulating_supply'] as num).toDouble(),
+      totalSupply: (json['total_supply'] as num).toDouble(),
+      maxSupply: json['max_supply'] != null ? (json['max_supply'] as num).toDouble() : null,
+      ath: (json['ath'] as num).toDouble(),
+      athChangePercentage: (json['ath_change_percentage'] as num).toDouble(),
+      athDate: json['ath_date'],
+      atl: (json['atl'] as num).toDouble(),
+      atlChangePercentage: (json['atl_change_percentage'] as num).toDouble(),
+      atlDate: json['atl_date'],
     );
-  }
-
-  /// Helper function to safely convert a JSON map to `Map<String, double>`
-  static Map<String, double> _convertToDoubleMap(Map<dynamic, dynamic>? jsonMap) {
-    if (jsonMap == null) return {};
-
-    return jsonMap.map((key, value) {
-      return MapEntry(key.toString(), (value as num?)?.toDouble() ?? 0.0);
-    });
   }
 }
