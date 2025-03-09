@@ -7,7 +7,7 @@ class Headers extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(text, style: kTextStyle(size: 25));
+    return Text(text, style: kTextStyle(size: 15));
     
   }
 }

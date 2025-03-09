@@ -18,7 +18,7 @@ class Crypto {
   final double marketCapChangePercentage24h;
   final double circulatingSupply;
   final double totalSupply;
-  final double? maxSupply;
+  double? maxSupply;
   final double ath;
   final double athChangePercentage;
   final String athDate;
@@ -72,7 +72,7 @@ class Crypto {
       marketCapChangePercentage24h: (json['market_cap_change_percentage_24h'] as num).toDouble(),
       circulatingSupply: (json['circulating_supply'] as num).toDouble(),
       totalSupply: (json['total_supply'] as num).toDouble(),
-      maxSupply: json['max_supply'] != null ? (json['max_supply'] as num).toDouble() : null,
+       maxSupply: json["max_supply"] != null ? (json["max_supply"] as num).toDouble() : null,
       ath: (json['ath'] as num).toDouble(),
       athChangePercentage: (json['ath_change_percentage'] as num).toDouble(),
       athDate: json['ath_date'],
