@@ -1,6 +1,6 @@
 # crypto_app
 
-A Flutter-based cryptocurrency tracker application.
+A Flutter-based cryptocurrency tracker application using **CoinGecko API**.
 
 ## Features
 
@@ -8,6 +8,8 @@ A Flutter-based cryptocurrency tracker application.
 - Cross-platform support: Android, iOS, Web, macOS, Windows, and Linux.
 - Modern Flutter UI.
 - Easy to extend with additional coins or features.
+
+![Group 427319145](https://github.com/user-attachments/assets/4459b45c-68b7-46fc-958f-d691d91fa0c9)
 
 ## Getting Started
 
