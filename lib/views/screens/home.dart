@@ -40,7 +40,7 @@ class MyHomePage extends ConsumerWidget {
                         ),
                       );
                     },
-                    child: _CoinListTile(index: index, coin: crypto[index]));
+                    child: _CoinListTile(index: index + 1, coin: crypto[index]));
               });
         },
         error: (err, _) {
