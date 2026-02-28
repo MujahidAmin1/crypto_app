@@ -2,79 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:crypto_app/models/coins.dart';
 import 'package:crypto_app/services/apiservice.dart';
 import 'package:crypto_app/views/screens/coin_details.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+var cryptoDataListenerProvider =
+    FutureProvider.autoDispose<List<Crypto>>((ref) async {
+  final apiService = ref.watch(apiServiceProvider);
+  return apiService.fetchData();
+});
+
+class MyHomePage extends ConsumerWidget {
+  const MyHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  late ApiService fetchCrypto;
-
-  @override
-  void initState() {
-    super.initState();
-    fetchCrypto = ApiService();
-  }
-
-  @override
-  void dispose() {
-    fetchCrypto.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    var cryptoDataRef = ref.watch(cryptoDataListenerProvider);
     return Scaffold(
-      backgroundColor: const Color(0xFF0D0D0D),
-      body: SafeArea(
-        child: Column(
-          children: [
-            _Header(title: widget.title),
-            const SizedBox(height: 16),
-            Expanded(
-              child: StreamBuilder<List<Crypto>>(
-                stream: fetchCrypto.dataStream,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (snapshot.hasError) {
-                    return Center(
-                      child: Text("Error: ${snapshot.error}",
-                          style: const TextStyle(color: Colors.white)),
-                    );
-                  }
-
-                  final coindata = snapshot.data ?? [];
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: coindata.length,
-                    itemBuilder: (context, index) {
-                      final crypto = coindata[index];
-                      return GestureDetector(
-                        onTap: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => CoinDetails(coindata: crypto),
-                          ),
+      backgroundColor: Colors.black38,
+      appBar: AppBar(
+        title: Text("Crypto"),
+        backgroundColor: Colors.black38,
+        foregroundColor: Colors.white,
+      ),
+      body: cryptoDataRef.when(
+        data: (crypto) {
+          return ListView.builder(
+              itemCount: cryptoDataRef.value!.length,
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return CoinDetails(coindata: crypto[index]);
+                          },
                         ),
-                        child: _CoinListTile(index: index + 1, coin: crypto),
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
+                    child: _CoinListTile(index: index, coin: crypto[index]));
+              });
+        },
+        error: (err, _) {
+          return Text('Error: $err');
+        },
+        loading: () {
+          return CircularProgressIndicator();
+        },
       ),
     );
   }
 }
+
 class _Header extends StatelessWidget {
   final String title;
   const _Header({required this.title});
@@ -88,13 +67,16 @@ class _Header extends StatelessWidget {
         children: [
           Text(title,
               style: const TextStyle(
-                  fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white)),
           const Icon(Icons.account_circle, size: 30, color: Colors.white54),
         ],
       ),
     );
   }
 }
+
 class _CoinListTile extends StatelessWidget {
   final int index;
   final Crypto coin;
@@ -102,7 +84,8 @@ class _CoinListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final priceColor = coin.priceChangePercentage24h < 0 ? Colors.red : Colors.green;
+    final priceColor =
+        coin.priceChangePercentage24h < 0 ? Colors.red : Colors.green;
     final formatter = NumberFormat.compactCurrency(symbol: '\$');
 
     return Container(
@@ -131,9 +114,11 @@ class _CoinListTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(coin.name,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600)),
                 Text(coin.symbol.toUpperCase(),
-                    style: const TextStyle(color: Colors.white38, fontSize: 12)),
+                    style:
+                        const TextStyle(color: Colors.white38, fontSize: 12)),
               ],
             ),
           ),
@@ -141,7 +126,8 @@ class _CoinListTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(formatter.format(coin.currentPrice),
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                  style: const TextStyle(
+                      color: Colors.white, fontWeight: FontWeight.w600)),
               Text("${coin.priceChangePercentage24h.toStringAsFixed(2)}%",
                   style: TextStyle(color: priceColor, fontSize: 12)),
             ],
