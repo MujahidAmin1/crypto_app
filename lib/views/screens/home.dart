@@ -18,7 +18,7 @@ class MyHomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     var cryptoDataRef = ref.watch(cryptoDataListenerProvider);
     return Scaffold(
-      backgroundColor: Colors.black38,
+      backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text("Crypto"),
         backgroundColor: Colors.black38,
